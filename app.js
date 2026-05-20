@@ -5,7 +5,7 @@ const recipes = [
         title: "Classic Spaghetti Carbonara",
         time: 25,
         difficulty: "easy",
-        description: "A creamy Italian pasta dish made with eggs, cheese, pancetta, and black pepper.",
+        description: "A  creamy had tastycreamy Italian pasta dish made with eggs, cheese, pancetta, and black pepper.",
         category: "pasta"
     },
     {
