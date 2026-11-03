@@ -67,6 +67,11 @@ const recipes = [
 ];
 
 const recipeContainer = document.querySelector("#recipe-container");
+const filterButtons = document.querySelectorAll(".filter-btn");
+const sortButtons = document.querySelectorAll(".sort-btn");
+
+let currentFilter = "all";
+let currentSort = "none";
 
 // Build the markup for one recipe card.
 const createRecipeCard = (recipe) => `
@@ -87,4 +92,88 @@ const renderRecipes = (recipesToRender) => {
         .join("");
 };
 
-renderRecipes(recipes);
+// Return recipes matching the selected difficulty or time filter.
+const filterRecipes = (recipesToFilter, filterType) => {
+    switch (filterType) {
+        case "easy":
+        case "medium":
+        case "hard":
+            return recipesToFilter.filter((recipe) => recipe.difficulty === filterType);
+        case "quick":
+            return recipesToFilter.filter((recipe) => recipe.time < 30);
+        case "all":
+        default:
+            return [...recipesToFilter];
+    }
+};
+
+const filterByDifficulty = (recipesToFilter, difficulty) =>
+    recipesToFilter.filter((recipe) => recipe.difficulty === difficulty);
+
+const filterByTime = (recipesToFilter, maxMinutes) =>
+    recipesToFilter.filter((recipe) => recipe.time < maxMinutes);
+
+const applyFilter = (recipesToFilter, filterType) =>
+    filterRecipes(recipesToFilter, filterType);
+
+// Sort a copied array so the original recipe order is never mutated.
+const sortRecipes = (recipesToSort, sortType) => {
+    if (sortType === "name") {
+        return [...recipesToSort].sort((a, b) => a.title.localeCompare(b.title));
+    }
+
+    if (sortType === "time") {
+        return [...recipesToSort].sort((a, b) => a.time - b.time);
+    }
+
+    return [...recipesToSort];
+};
+
+const sortByName = (recipesToSort) =>
+    [...recipesToSort].sort((a, b) => a.title.localeCompare(b.title));
+
+const sortByTime = (recipesToSort) =>
+    [...recipesToSort].sort((a, b) => a.time - b.time);
+
+const applySort = (recipesToSort, sortType) =>
+    sortRecipes(recipesToSort, sortType);
+
+const updateActiveButtons = () => {
+    filterButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.filter === currentFilter);
+    });
+
+    sortButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.sort === currentSort);
+    });
+};
+
+const updateDisplay = () => {
+    const filteredRecipes = applyFilter(recipes, currentFilter);
+    const recipesToDisplay = applySort(filteredRecipes, currentSort);
+
+    renderRecipes(recipesToDisplay);
+    updateActiveButtons();
+    console.log(
+        `Displaying ${recipesToDisplay.length} recipes (Filter: ${currentFilter}, Sort: ${currentSort})`
+    );
+};
+
+const setupEventListeners = () => {
+    filterButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            currentFilter = button.dataset.filter;
+            updateDisplay();
+        });
+    });
+
+    sortButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            currentSort = button.dataset.sort;
+            updateDisplay();
+        });
+    });
+};
+
+setupEventListeners();
+updateDisplay();
